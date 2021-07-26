@@ -1,0 +1,15 @@
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0;
+  height: 100vh;
+}
+
+.albums {
+  font-size: 0;
+  width: 1024px;
+  height: 768px;
+  background-color: rgb(172, 172, 172);
+}
