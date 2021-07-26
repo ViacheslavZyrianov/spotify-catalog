@@ -1,15 +1,64 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
   margin: 0;
   height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  background-color: rgb(29, 27, 51);
+  overscroll-behavior-y: contain;
+}
+
+a {
+  text-decoration: none;
+}
+
+.btn-auth {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #1BD760;
+  color: #fff;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  transition: background-color 0.3s;
+}
+
+.btn-auth:hover {
+  background-color: #19bd55;
 }
 
 .albums {
-  font-size: 0;
-  width: 1024px;
-  height: 768px;
-  background-color: rgb(172, 172, 172);
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media screen and (min-width: 1024px) {
+  .albums {
+    width: 80%;
+  }  
+}
+
+.album {
+  display: block;
+  position: relative;
+  flex: 1 1 64px;
+  max-width: 256px;
+  transition: box-shadow 0.3s;
+  width: 100%;
+}
+
+@media screen and (min-width: 1024px) {
+  .album:hover {
+    box-shadow: 0 0 4px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+  }  
+}
+
+.album img {
+  display: block;
+  width: 100%;
 }

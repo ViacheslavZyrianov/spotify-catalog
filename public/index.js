@@ -1,25 +1,59 @@
-const insertAlbum = ({ album }) => {
-  const albumSrc = album.images[album.images.length - 1].url
+const insertAlbum = ({ href, image }) => {
+  let albumsEl = document.querySelector('.albums')
+
+  if (!albumsEl) {
+    albumsEl = document.createElement('div')
+    albumsEl.classList.add('albums')
+    document.body.prepend(albumsEl)
+  }
+
+  const aEl = document.createElement('a')
+  aEl.classList.add('album')
+  aEl.setAttribute('href', href)
+  aEl.setAttribute('target', '_blank')
+
   const imgEl = document.createElement('img')
-  imgEl.setAttribute('src', albumSrc)
-  document.querySelector('.albums').appendChild(imgEl)
+  imgEl.setAttribute('src', image)
+
+  aEl.append(imgEl)
+  albumsEl.append(aEl)
+}
+
+const sanitizeAlbums = albumsData => {
+  return albumsData.map(({ album: { external_urls: { spotify: href }, images } }) => ({
+    href,
+    image: images[images.length - 2].url
+  }))
+}
+
+const fetchAlbumsFromAPI = url => {
+  return fetch(url, {
+    headers: { 'Authorization': `Bearer ${access_token}` }
+  })
+}
+
+const fetchAlbums = async (url = 'https://api.spotify.com/v1/me/albums?limit=50&offset=0') => {  
+    let albums = []
+    let nextURL = url
+
+    while (nextURL) {
+      const albumsFromAPI = await fetchAlbumsFromAPI(nextURL).then(res => res.json())
+      nextURL = albumsFromAPI.next
+      albums = albums.concat(albumsFromAPI.items)
+    }
+
+    return Promise.resolve(albums)
 }
 
 const access_token = document.cookie.split(';').find(el => el.includes('access_token'))?.split('=')[1]
 
 if (access_token) {
-  const fetchAlbum = (limit, offset) => fetch(`https://api.spotify.com/v1/me/albums?limit=${limit}&offset=${offset}`, {
-    headers: { 'Authorization': `Bearer ${access_token}` }
-  })
+  const btnAuthEl = document.querySelector('.btn-auth')
+  btnAuthEl.classList.add('loading')
 
-  Promise.all([
-    fetchAlbum(50, 0),
-    fetchAlbum(50, 1),
-    fetchAlbum(50, 2),
-    fetchAlbum(42, 3)
-  ]).then(res => res.map(resItem => resItem.json().then(({ items }) => {
-    items.forEach(album => {
-      insertAlbum(album)
-    })
-  })))
+  fetchAlbums().then(res => {
+    const sanitizedAlbums = sanitizeAlbums(res)
+    sanitizedAlbums.forEach(sanitizedAlbum => insertAlbum(sanitizedAlbum))
+    btnAuthEl.remove()
+  })
 }
